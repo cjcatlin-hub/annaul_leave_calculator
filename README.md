@@ -34,16 +34,16 @@
 
 ### Build standalone Windows App
 1. Install PyInstaller:
-2. Build .exe
+2. Build .exe <br>
    `pyinstaller --onefile --windowed leave_calculator_gui.py`
 
 ### Input Fields
--`Employee Number`: employee number
--`Leave period Start/End`: used to calcaulte entitlemt for the period
--`Hire Date`: Original employee hire date - used to calcualte long service award
--`Termination Date`: Leave blank id still employed or no change in scheduled weekly hours
--`Contracted Weekly Hours`: Defaults to 37.5 - scheduled weekly hours
--`Full-Time Entitlement`: Defualts to 247.5 hours per year
+-`Employee Number`: employee number <br>
+-`Leave period Start/End`: used to calcaulte entitlemt for the period <br>
+-`Hire Date`: Original employee hire date - used to calcualte long service award <br>
+-`Termination Date`: Leave blank id still employed or no change in scheduled weekly hours <br>
+-`Contracted Weekly Hours`: Defaults to 37.5 - scheduled weekly hours <br>
+-`Full-Time Entitlement`: Defualts to 247.5 hours per year <br>
 
 
 
@@ -60,6 +60,6 @@ A detailed summary of:
 - Batch processing for multiple employees
 - Get bank holidays from .gov API
 
-🙌 Author
-Created by Chris Catley
+### 🙌 Author <br>
+Created by Chris Catlin <br>
 Adapted from jessicastow/annual_leave_calculator
