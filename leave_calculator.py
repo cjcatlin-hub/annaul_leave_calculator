@@ -43,7 +43,6 @@ def calculate_leave():
             return
 
         contracted_hours = float(contracted_input)
-        full_time_entitlement = float(entry_entitlement.get().strip() or 247.5)
 
         # Bank holidays
         leave_year = end_date.year
@@ -55,11 +54,18 @@ def calculate_leave():
         selected_region = region_map[region_var.get()]
         bank_holiday_count = get_bank_holidays(leave_year, selected_region)
 
+        entitlement = 5.0 * 37.5
+        bh_entitlement = bank_holiday_count * 7.5
+        full_time_entitlement = entitlement + bh_entitlement
+
         # Calculations
         days_worked = (end_date - start_date).days
         days_employed = (termination_date - hire_date).days
         years_employed = days_employed / 365.25
 
+        bank_holiday
+        proated_base = (contracted_hours / 37.5) * entitlement
+        proated_bh = (contracted_hours / 37.5) * bh_entitlement
         prorated_entitlement = (contracted_hours / 37.5) * full_time_entitlement
 
         # Long service award
@@ -78,6 +84,7 @@ Employee Number: {emp_number}
 Employment Period:
   Hire Date: {hire_date.strftime('%d %B %Y')}
   Termination Date: {termination_date.strftime('%d %B %Y')}
+  Contracted Weekly Hours: {contracted_hours} hours/week
   Total Days Employed: {days_employed} days ({years_employed:.2f} years)
 
 Leave Period:
@@ -86,11 +93,11 @@ Leave Period:
   Total Days Worked: {days_worked} days
 
 Annual Leave Entitlement:
-  Full-Time Entitlement: {full_time_entitlement} hours/year
-  Contracted Weekly Hours: {contracted_hours} hours/week
-  Prorated Annual Entitlement: {prorated_entitlement:.2f} hours/year
+  Base Entitlement (including B/H): {prorated_entitlement:.2f} hours
+      Basic componenet: {proated_base:.2f} hours
+      Bank holiday component: {proated_bh:.2f} hours
   Long Service Award: {long_service_award:.2f} hours
-  Total Annual Entitlement: {total_entitlement:.2f} hours/year
+  Total Annual Entitlement: {total_entitlement:.2f} hours
 
 Bank Holidays in {leave_year} ({region_var.get()}): {bank_holiday_count}
 ============================================================
