@@ -11,7 +11,7 @@
 - Automatically adds a **7.5-hour long service award** on the 5th anniversary (prorated)
 - Defaults termination date to **31 December** of the leave year if left blank
 - Clean, scrollable summary output
-- No internet connection required after packaging
+- Internet connection required after packaging to fetch bank holidays from GOV API
 
 ---
 
