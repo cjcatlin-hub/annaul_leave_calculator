@@ -3,7 +3,6 @@ from tkinter import ttk, messagebox
 from datetime import datetime
 import requests
 
-# Fetch bank holidays in the year from GOV API
 def get_bank_holidays(year, region="england-and-wales"):
     """Fetch UK bank holidays from GOV.UK API and count holidays for the given year."""
     try:
@@ -16,6 +15,19 @@ def get_bank_holidays(year, region="england-and-wales"):
         return count
     except Exception:
         return "Unavailable"
+
+def validate_contracted_hours(value):
+    """Validate contracted hours: must be between 0 and 40 in 0.25 increments."""
+    try:
+        hours = float(value)
+        if hours < 0 or hours > 40:
+            return False
+        # Check if it's a multiple of 0.25 (15 minutes)
+        if round(hours * 4) != hours * 4:
+            return False
+        return True
+    except ValueError:
+        return False
 
 def calculate_leave():
     try:
@@ -30,13 +42,13 @@ def calculate_leave():
         else:
             termination_date = datetime(end_date.year, 12, 31)
 
-        contracted_hours = float(entry_contracted.get().strip() or 37.5)
-        # Bank holidays
-        leave_year = end_date.year
-        bank_holiday_count = get_bank_holidays(leave_year)
-        full_bank_holiday_entitlement = 7.5 * bank_holiday_count
-        entitlement = 5 * 37.5
-        full_time_entitlement = entitlement + full_bank_holiday_entitlement
+        contracted_input = entry_contracted.get().strip() or "37.5"
+        if not validate_contracted_hours(contracted_input):
+            messagebox.showerror("Error", "Contracted hours must be between 0 and 40 in 15-minute increments (0.25 hours).")
+            return
+
+        contracted_hours = float(contracted_input)
+        full_time_entitlement = float(entry_entitlement.get().strip() or 247.5)
 
         # Calculations
         days_worked = (end_date - start_date).days
@@ -49,6 +61,10 @@ def calculate_leave():
         five_year_blocks = int(years_employed // 5)
         long_service_award = ((contracted_hours / 37.5) * 7.5) * five_year_blocks
         total_entitlement = prorated_entitlement + long_service_award
+
+        # Bank holidays
+        leave_year = end_date.year
+        bank_holiday_count = get_bank_holidays(leave_year)
 
         # Output summary
         summary = f"""
@@ -98,7 +114,7 @@ fields = [
     ("Employment End Date (yyyy-mm-dd)", "end"),
     ("Hire Date (yyyy-mm-dd)", "hire"),
     ("Termination Date (yyyy-mm-dd)", "termination"),
-    ("Contracted Weekly Hours (default 37.5)", "contracted"),
+    ("Contracted Weekly Hours (0-40, 15-min increments)", "contracted"),
     ("Full-Time Entitlement (default 247.5)", "entitlement")
 ]
 
