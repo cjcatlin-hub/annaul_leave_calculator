@@ -56,12 +56,15 @@ A detailed summary of:
 
 ### 🛠️ Todo
 - **Add full long service entitlement (+7.5 hours every 5 years) - done**
-- Export summary to PDF or CSV
+- **Export summary to PDF or CSV - done**
 - Add GUI theming or dark mode
 - Batch processing for multiple employees
 - **Get bank holidays from .gov API - done**
 - Change output to match Optima input
 - **Limit contract hours to 0 - 40 in 0.25 increments - done**
+- **Proata entitlements for number of days between start_date and end_Date - done**
+- ** Make code modular - done**
+- Fix so termination date is used instead of leave end date when filled in
 
 ### 🙌 Author <br>
 Created by Chris Catlin <br>
