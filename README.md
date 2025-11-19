@@ -41,7 +41,6 @@
 -`Employee Number`: employee number <br>
 -`Leave period Start/End`: used to calcaulte entitlemt for the period <br>
 -`Hire Date`: Original employee hire date - used to calcualte long service award <br>
--`Termination Date`: Leave blank id still employed or no change in scheduled weekly hours <br>
 -`Contracted Weekly Hours`: Defaults to 37.5 - scheduled weekly hours <br>
 -`Full-Time Entitlement`: Defualts to 247.5 hours per year <br>
 
@@ -57,14 +56,14 @@ A detailed summary of:
 ### 🛠️ Todo
 - **Add full long service entitlement (+7.5 hours every 5 years) - done**
 - **Export summary to PDF or CSV - done**
-- Add GUI theming or dark mode
+- **Add GUI theming or dark mode - done**
 - Batch processing for multiple employees
+- Batch processing for contract hours changes
 - **Get bank holidays from .gov API - done**
-- Change output to match Optima input
+- **Change output to match Optima input - done**
 - **Limit contract hours to 0 - 40 in 0.25 increments - done**
 - **Proata entitlements for number of days between start_date and end_Date - done**
 - ** Make code modular - done**
-- Fix so termination date is used instead of leave end date when filled in
 
 ### 🙌 Author <br>
 Created by Chris Catlin <br>
