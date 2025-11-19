@@ -1,68 +1,97 @@
-import tkinter as tk
-from tkinter import ttk
-from tkcalendar import DateEntry
+import ttkbootstrap as tb
+from ttkbootstrap.constants import *
+from ttkbootstrap.widgets import DateEntry
 from datetime import datetime
 from logic import calculate_leave
-from export import export_to_csv, export_to_pdf, print_summary
+from output_utils import export_to_csv, export_to_pdf, print_summary
+
 
 def build_gui():
-    root = tk.Tk()
+    root = tb.Window(themename="flatly")
     root.title("Annual Leave Calculator")
-
-    frame = ttk.Frame(root, padding="10")
-    frame.grid(row=0, column=0, sticky="nsew")
+    root.state("zoomed")  # Start maximized
 
     today = datetime.today()
-    default_start = datetime(today.year, 1, 1)
-    default_end = datetime(today.year, 12, 31)
 
-    # Widgets
-    ttk.Label(frame, text="Employee Number").grid(row=0, column=0, sticky="w")
-    emp_entry = ttk.Entry(frame, width=30)
-    emp_entry.grid(row=0, column=1)
+    # Theme switcher logic
+    def set_theme(theme_name):
+        root.style.theme_use(theme_name)
 
-    ttk.Label(frame, text="Leave Period Start Date").grid(row=1, column=0, sticky="w")
-    start_entry = DateEntry(frame, width=27, date_pattern="dd-mm-yyyy", year=default_start.year, month=default_start.month, day=default_start.day)
-    start_entry.grid(row=1, column=1)
+    # Menu bar with theme toggle
+    menubar = tb.Menu(root)
+    theme_menu = tb.Menu(menubar, tearoff=0)
+    theme_menu.add_command(label="Light", command=lambda: set_theme("flatly"))
+    theme_menu.add_command(label="Dark", command=lambda: set_theme("darkly"))
+    menubar.add_cascade(label="Theme", menu=theme_menu)
+    root.config(menu=menubar)
 
-    ttk.Label(frame, text="Leave Period End Date").grid(row=2, column=0, sticky="w")
-    end_entry = DateEntry(frame, width=27, date_pattern="dd-mm-yyyy", year=default_end.year, month=default_end.month, day=default_end.day)
-    end_entry.grid(row=2, column=1)
+    # Header
+    tb.Label(root, text="🗓️ Annual Leave Calculator", font=("Segoe UI", 20, "bold"), bootstyle="primary").pack(pady=(20, 5))
+    tb.Label(root, text="Calculate prorated leave and long service awards with ease", font=("Segoe UI", 11)).pack(pady=(0, 15))
 
-    ttk.Label(frame, text="Hire Date").grid(row=3, column=0, sticky="w")
-    hire_entry = DateEntry(frame, width=27, date_pattern="dd-mm-yyyy")
-    hire_entry.grid(row=3, column=1)
+    # Main horizontal container
+    main_frame = tb.Frame(root)
+    main_frame.pack(fill=BOTH, expand=True, padx=20, pady=10)
 
-    ttk.Label(frame, text="Termination Date").grid(row=4, column=0, sticky="w")
-    termination_entry = DateEntry(frame, width=27, date_pattern="dd-mm-yyyy", state="disabled")
-    termination_entry.grid(row=4, column=1)
+    # Left: Input section
+    input_frame = tb.Frame(main_frame)
+    input_frame.pack(side=LEFT, fill=Y, expand=False, padx=(0, 10))
 
-    termination_var = tk.BooleanVar(value=False)
-    ttk.Checkbutton(frame, text="Include Termination Date", variable=termination_var,
-                    command=lambda: termination_entry.config(state="normal" if termination_var.get() else "disabled")).grid(row=4, column=2)
+    # Right: Output section
+    output_frame = tb.Frame(main_frame)
+    output_frame.pack(side=RIGHT, fill=BOTH, expand=True)
 
-    ttk.Label(frame, text="Contracted Weekly Hours").grid(row=5, column=0, sticky="w")
-    hours_entry = ttk.Entry(frame, width=30)
-    hours_entry.grid(row=5, column=1)
+    # Employee Info
+    emp_frame = tb.Labelframe(input_frame, text="👤 Employee Information", padding=15, bootstyle="info")
+    emp_frame.pack(fill=X, pady=10)
+    tb.Label(emp_frame, text="Employee Number").pack(anchor=W)
+    emp_entry = tb.Entry(emp_frame, width=30, bootstyle="info")
+    emp_entry.pack(pady=5)
+    tb.Label(emp_frame, text="Hire Date").pack(anchor=W)
+    hire_entry = DateEntry(emp_frame, width=27, bootstyle="info")
+    hire_entry.pack(pady=5)
 
-    ttk.Label(frame, text="Bank Holiday Region").grid(row=7, column=0, sticky="w")
-    region_var = tk.StringVar(value="England & Wales")
-    region_dropdown = ttk.Combobox(frame, textvariable=region_var,
-                                   values=["England & Wales", "Scotland", "Northern Ireland"],
-                                   state="readonly", width=27)
-    region_dropdown.grid(row=7, column=1)
+    # Leave Period
+    leave_frame = tb.Labelframe(input_frame, text="📆 Leave Period", padding=15, bootstyle="info")
+    leave_frame.pack(fill=X, pady=10)
+    tb.Label(leave_frame, text="Start Date").pack(anchor=W)
+    start_entry = DateEntry(leave_frame, width=27, bootstyle="info")
+    start_entry.pack(pady=5)
+    start_entry.set_date(datetime(today.year, 1, 1))
+    tb.Label(leave_frame, text="End Date").pack(anchor=W)
+    end_entry = DateEntry(leave_frame, width=27, bootstyle="info")
+    end_entry.pack(pady=5)
+    end_entry.set_date(datetime(today.year, 12, 31))
 
-    output_box = tk.Text(root, wrap="word", height=100, width=100)
-    output_box.grid(row=1, column=0, padx=10, pady=10)
+    # Contract Info
+    contract_frame = tb.Labelframe(input_frame, text="📄 Contract Details", padding=15, bootstyle="info")
+    contract_frame.pack(fill=X, pady=10)
+    tb.Label(contract_frame, text="Contracted Weekly Hours").pack(anchor=W)
+    hours_entry = tb.Entry(contract_frame, width=30, bootstyle="info")
+    hours_entry.pack(pady=5)
+    tb.Label(contract_frame, text="Bank Holiday Region").pack(anchor=W)
+    region_var = tb.StringVar(value="England & Wales")
+    region_dropdown = tb.Combobox(contract_frame, textvariable=region_var,
+                                  values=["England & Wales", "Scotland", "Northern Ireland"],
+                                  state="readonly", width=27, bootstyle="info")
+    region_dropdown.pack(pady=5)
+
+    # Output Box (must be defined before buttons use it)
+    output_box = tb.Text(output_frame, wrap="word", font=("Consolas", 10))
+    output_box.pack(fill=BOTH, expand=True)
+
 
     # Buttons
-    ttk.Button(frame, text="Calculate Leave", command=lambda: calculate_leave(
-        emp_entry, start_entry, end_entry, hire_entry, termination_entry,
-        termination_var, hours_entry, region_var, output_box
-    )).grid(row=8, column=0, columnspan=2, pady=10)
-
-    ttk.Button(frame, text="Export to CSV", command=lambda: export_to_csv(output_box)).grid(row=9, column=0)
-    ttk.Button(frame, text="Export to PDF", command=lambda: export_to_pdf(output_box)).grid(row=9, column=1)
-    ttk.Button(frame, text="Print Summary", command=lambda: print_summary()).grid(row=9, column=2)
-
+    button_frame = tb.Frame(input_frame)
+    button_frame.pack(pady=20)
+    tb.Button(button_frame, text="🧮 Calculate", bootstyle=PRIMARY,
+              command=lambda: calculate_leave(emp_entry, start_entry, end_entry, hire_entry,
+                                              hours_entry, region_var, output_box)).grid(row=0, column=0, padx=10)
+    tb.Button(button_frame, text="📤 Export CSV", bootstyle=INFO,
+              command=lambda: export_to_csv(output_box)).grid(row=0, column=1, padx=10)
+    tb.Button(button_frame, text="📝 Export PDF", bootstyle=SUCCESS,
+              command=lambda: export_to_pdf(output_box)).grid(row=1, column=0, padx=10, pady=5)
+    tb.Button(button_frame, text="🖨️ Print", bootstyle=SECONDARY,
+              command=lambda: print_summary()).grid(row=1, column=1, padx=10, pady=5)
+    
     root.mainloop()
