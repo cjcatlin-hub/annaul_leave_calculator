@@ -8,7 +8,7 @@
 ## ✨ Features
 
 - Calculates prorated annual leave based on contracted weekly hours (37.5 = full-time)
-- Automatically adds a **7.5-hour long service award** on the 5th anniversary (prorated)
+- Automatically adds a **7.5-hour long service award** on the 5th anniversary and every 5th year thereafter (prorated)
 - Defaults termination date to **31 December** of the leave year if left blank
 - Clean, scrollable summary output
 - Internet connection required after packaging to fetch bank holidays from GOV API
