@@ -26,7 +26,10 @@ def calculate_leave():
         years_employed = days_employed / 365.25
 
         prorated_entitlement = (contracted_hours / 37.5) * full_time_entitlement
-        long_service_award = (contracted_hours / 37.5) * 7.5 if days_employed >= 5 * 365 else 0
+
+        # Long service (each 5 years)
+        five_year_blocks = int(years_employed // 5)
+        long_service_award = ((contracted_hours / 37.5) * 7.5) * five_year_blocks
         total_entitlement = prorated_entitlement + long_service_award
 
         # Output
@@ -48,9 +51,8 @@ Leave Period:
   Total Days Worked: {days_worked} days
 
 Annual Leave Entitlement:
-  Full-Time Entitlement: {full_time_entitlement} hours/year
   Contracted Weekly Hours: {contracted_hours} hours/week
-  Prorated Annual Entitlement: {prorated_entitlement:.2f} hours/year
+  Annual Leave Entitlement: {prorated_entitlement:.2f} hours/year
   Long Service Award: {long_service_award:.2f} hours
   Total Annual Entitlement: {total_entitlement:.2f} hours/year
 ============================================================
