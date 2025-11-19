@@ -2,9 +2,10 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import datetime
 import requests
+from tkcalendar import DateEntry
 
+# Fetch bank holidays from GOV.UK API
 def get_bank_holidays(year, region="england-and-wales"):
-    """Fetch UK bank holidays from GOV.UK API and count holidays for the given year."""
     try:
         url = "https://www.gov.uk/bank-holidays.json"
         response = requests.get(url, timeout=10)
@@ -16,14 +17,13 @@ def get_bank_holidays(year, region="england-and-wales"):
     except Exception:
         return "Unavailable"
 
+# Validate contracted hours
 def validate_contracted_hours(value):
-    """Validate contracted hours: must be between 0 and 40 in 0.25 increments."""
     try:
         hours = float(value)
         if hours < 0 or hours > 40:
             return False
-        # Check if it's a multiple of 0.25 (15 minutes)
-        if round(hours * 4) != hours * 4:
+        if round(hours * 4) != hours * 4:  # Check 15-min increments
             return False
         return True
     except ValueError:
@@ -31,16 +31,11 @@ def validate_contracted_hours(value):
 
 def calculate_leave():
     try:
-        # Get inputs
         emp_number = entry_emp_number.get().strip()
-        start_date = datetime.strptime(entry_start.get().strip(), "%Y-%m-%d")
-        end_date = datetime.strptime(entry_end.get().strip(), "%Y-%m-%d")
-        hire_date = datetime.strptime(entry_hire.get().strip(), "%Y-%m-%d")
-        termination_input = entry_termination.get().strip()
-        if termination_input:
-            termination_date = datetime.strptime(termination_input, "%Y-%m-%d")
-        else:
-            termination_date = datetime(end_date.year, 12, 31)
+        start_date = entry_start.get_date()
+        end_date = entry_end.get_date()
+        hire_date = entry_hire.get_date()
+        termination_date = entry_termination.get_date()
 
         contracted_input = entry_contracted.get().strip() or "37.5"
         if not validate_contracted_hours(contracted_input):
@@ -49,6 +44,16 @@ def calculate_leave():
 
         contracted_hours = float(contracted_input)
         full_time_entitlement = float(entry_entitlement.get().strip() or 247.5)
+
+        # Bank holidays
+        leave_year = end_date.year
+        region_map = {
+            "England & Wales": "england-and-wales",
+            "Scotland": "scotland",
+            "Northern Ireland": "northern-ireland"
+        }
+        selected_region = region_map[region_var.get()]
+        bank_holiday_count = get_bank_holidays(leave_year, selected_region)
 
         # Calculations
         days_worked = (end_date - start_date).days
@@ -61,10 +66,6 @@ def calculate_leave():
         five_year_blocks = int(years_employed // 5)
         long_service_award = ((contracted_hours / 37.5) * 7.5) * five_year_blocks
         total_entitlement = prorated_entitlement + long_service_award
-
-        # Bank holidays
-        leave_year = end_date.year
-        bank_holiday_count = get_bank_holidays(leave_year)
 
         # Output summary
         summary = f"""
@@ -91,7 +92,7 @@ Annual Leave Entitlement:
   Long Service Award: {long_service_award:.2f} hours
   Total Annual Entitlement: {total_entitlement:.2f} hours/year
 
-Bank Holidays in {leave_year} (England & Wales): {bank_holiday_count}
+Bank Holidays in {leave_year} ({region_var.get()}): {bank_holiday_count}
 ============================================================
 """
         text_output.delete("1.0", tk.END)
@@ -108,33 +109,42 @@ frame = ttk.Frame(root, padding="10")
 frame.grid(row=0, column=0, sticky="nsew")
 
 # Input fields
-fields = [
-    ("Employee Number", "emp_number"),
-    ("Employment Start Date (yyyy-mm-dd)", "start"),
-    ("Employment End Date (yyyy-mm-dd)", "end"),
-    ("Hire Date (yyyy-mm-dd)", "hire"),
-    ("Termination Date (yyyy-mm-dd)", "termination"),
-    ("Contracted Weekly Hours (0-40, 15-min increments)", "contracted"),
-    ("Full-Time Entitlement (default 247.5)", "entitlement")
-]
+ttk.Label(frame, text="Employee Number").grid(row=0, column=0, sticky="w")
+entry_emp_number = ttk.Entry(frame, width=30)
+entry_emp_number.grid(row=0, column=1)
 
-entries = {}
-for i, (label, key) in enumerate(fields):
-    ttk.Label(frame, text=label).grid(row=i, column=0, sticky="w")
-    entry = ttk.Entry(frame, width=30)
-    entry.grid(row=i, column=1)
-    entries[key] = entry
+ttk.Label(frame, text="Employment Start Date").grid(row=1, column=0, sticky="w")
+entry_start = DateEntry(frame, width=27, date_pattern="yyyy-mm-dd")
+entry_start.grid(row=1, column=1)
 
-entry_emp_number = entries["emp_number"]
-entry_start = entries["start"]
-entry_end = entries["end"]
-entry_hire = entries["hire"]
-entry_termination = entries["termination"]
-entry_contracted = entries["contracted"]
-entry_entitlement = entries["entitlement"]
+ttk.Label(frame, text="Employment End Date").grid(row=2, column=0, sticky="w")
+entry_end = DateEntry(frame, width=27, date_pattern="yyyy-mm-dd")
+entry_end.grid(row=2, column=1)
+
+ttk.Label(frame, text="Hire Date").grid(row=3, column=0, sticky="w")
+entry_hire = DateEntry(frame, width=27, date_pattern="yyyy-mm-dd")
+entry_hire.grid(row=3, column=1)
+
+ttk.Label(frame, text="Termination Date").grid(row=4, column=0, sticky="w")
+entry_termination = DateEntry(frame, width=27, date_pattern="yyyy-mm-dd")
+entry_termination.grid(row=4, column=1)
+
+ttk.Label(frame, text="Contracted Weekly Hours (0-40, 15-min increments)").grid(row=5, column=0, sticky="w")
+entry_contracted = ttk.Entry(frame, width=30)
+entry_contracted.grid(row=5, column=1)
+
+ttk.Label(frame, text="Full-Time Entitlement (default 247.5)").grid(row=6, column=0, sticky="w")
+entry_entitlement = ttk.Entry(frame, width=30)
+entry_entitlement.grid(row=6, column=1)
+
+# Region dropdown
+ttk.Label(frame, text="Bank Holiday Region").grid(row=7, column=0, sticky="w")
+region_var = tk.StringVar(value="England & Wales")
+region_dropdown = ttk.Combobox(frame, textvariable=region_var, values=["England & Wales", "Scotland", "Northern Ireland"], state="readonly", width=27)
+region_dropdown.grid(row=7, column=1)
 
 # Calculate button
-ttk.Button(frame, text="Calculate Leave", command=calculate_leave).grid(row=len(fields), column=0, columnspan=2, pady=10)
+ttk.Button(frame, text="Calculate Leave", command=calculate_leave).grid(row=8, column=0, columnspan=2, pady=10)
 
 # Output box
 text_output = tk.Text(root, wrap="word", height=20, width=80)
