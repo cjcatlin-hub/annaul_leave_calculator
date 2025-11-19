@@ -35,7 +35,7 @@
 ### Build standalone Windows App
 1. Install PyInstaller:
 2. Build .exe <br>
-   `pyinstaller --onefile --windowed leave_calculator_gui.py`
+   `pyinstaller --onefile --windowed main.py`
 
 ### Input Fields
 -`Employee Number`: employee number <br>
