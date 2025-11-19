@@ -55,10 +55,12 @@ A detailed summary of:
 - Total annual leave entitlement
 
 ### 🛠️ Todo
+- Add full long service entitlement (+7.5 hours every 5 years)
 - Export summary to PDF or CSV
 - Add GUI theming or dark mode
 - Batch processing for multiple employees
 - Get bank holidays from .gov API
+- Change output to match Optima input
 
 ### 🙌 Author <br>
 Created by Chris Catlin <br>
