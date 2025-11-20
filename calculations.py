@@ -3,6 +3,7 @@ import requests
 
 weeks_entitlement = 5
 WTE = 37.5
+long_service_years = 5
 
 def get_bank_holidays(year, region="england-and-wales"):
     try:
@@ -37,8 +38,8 @@ def calculate_entitlements(contracted_hours, leave_days, days_in_year, bank_holi
     return prorated, base, bh
 
 def calculate_long_service(contracted_hours, years_employed, leave_days, days_in_year):
-    blocks = int(years_employed // 5)
+    blocks = int(years_employed // long_service_years)
     if blocks == 0:
-        return 0, "⚠️ Not eligible for long service award (less than 5 years)"
+        return 0, "⚠️ Not eligible for long service award (less than long_serivce_years years)"
     award = round_to_quarter_hour((((contracted_hours / 37.5) * 7.5) * blocks) * (leave_days / days_in_year))
-    return award, f"Eligible: {blocks} × 5-year block(s)"
+    return award, f"Eligible: {blocks} × {long_service_years}-year block(s)"
