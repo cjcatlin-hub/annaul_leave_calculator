@@ -1,6 +1,9 @@
 from datetime import datetime
 import requests
 
+weeks_entitlement = 5
+WTE = 37.5
+
 def get_bank_holidays(year, region="england-and-wales"):
     try:
         url = "https://www.gov.uk/bank-holidays.json"
@@ -23,7 +26,7 @@ def validate_contracted_hours(value):
         return False
 
 def calculate_entitlements(contracted_hours, leave_days, days_in_year, bank_holidays):
-    base_entitlement = 5.0 * 37.5
+    base_entitlement = weeks_entitlement * WTE
     bh_entitlement = bank_holidays * 7.5
     full_time = base_entitlement + bh_entitlement
 
