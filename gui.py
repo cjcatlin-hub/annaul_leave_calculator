@@ -74,33 +74,75 @@ def build_gui():
     emp_entry = tb.Entry(emp_frame, width=30, bootstyle="info")
     emp_entry.pack(pady=5)
     tb.Label(emp_frame, text="Hire Date").pack(anchor=W)
-    hire_entry = DateEntry(emp_frame, width=27, bootstyle="info")
+    hire_entry = DateEntry(emp_frame, width=27, bootstyle="info", dateformat="%d-%m-%Y")
     hire_entry.pack(pady=5)
 
     # Leave Period
     leave_frame = tb.Labelframe(input_frame, text="📆 Leave Period", padding=15, bootstyle="info")
     leave_frame.pack(fill=X, pady=10)
     tb.Label(leave_frame, text="Start Date").pack(anchor=W)
-    start_entry = DateEntry(leave_frame, width=27, bootstyle="info")
+    start_entry = DateEntry(leave_frame, width=27, bootstyle="info", dateformat="%d-%m-%Y")
     start_entry.pack(pady=5)
     start_entry.set_date(datetime(today.year, 1, 1))
     tb.Label(leave_frame, text="End Date").pack(anchor=W)
-    end_entry = DateEntry(leave_frame, width=27, bootstyle="info")
+    end_entry = DateEntry(leave_frame, width=27, bootstyle="info", dateformat="%d-%m-%Y")
     end_entry.pack(pady=5)
     end_entry.set_date(datetime(today.year, 12, 31))
 
-    # Contract Info
+    # Contracts
     contract_frame = tb.Labelframe(input_frame, text="📄 Contract Details", padding=15, bootstyle="info")
-    contract_frame.pack(fill=X, pady=10)
-    tb.Label(contract_frame, text="Contracted Weekly Hours").pack(anchor=W)
-    hours_entry = tb.Entry(contract_frame, width=30, bootstyle="info")
-    hours_entry.pack(pady=5)
-    tb.Label(contract_frame, text="Bank Holiday Region").pack(anchor=W)
-    region_var = tb.StringVar(value="England & Wales")
-    region_dropdown = tb.Combobox(contract_frame, textvariable=region_var,
-                                  values=["England & Wales", "Scotland", "Northern Ireland"],
-                                  state="readonly", width=27, bootstyle="info")
-    region_dropdown.pack(pady=5)
+    contract_frame.pack(fill=X, expand=True, pady=10)
+
+    canvas = tb.Canvas(contract_frame, width=550)
+    scroll_y = tb.Scrollbar(contract_frame, orient="vertical", command=canvas.yview)
+    periods_frame = tb.Frame(canvas)
+    periods_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+    canvas.create_window((0, 0), window=periods_frame, anchor="nw")
+    canvas.configure(yscrollcommand=scroll_y.set)
+    canvas.pack(side=LEFT, fill=BOTH, expand=True)
+    scroll_y.pack(side=RIGHT, fill=Y)
+
+    periods = []
+
+    def add_period():
+        frame = tb.Frame(periods_frame)
+        frame.pack(fill=X, pady=3)
+
+        # Default start date logic
+        if periods:
+            prev_end = periods[-1]["end"].get_date()
+            default_start = prev_end + timedelta(days=1)
+        else:
+            default_start = start_entry.get_date()
+
+        default_end = end_entry.get_date()
+
+        start = DateEntry(frame, width=10, dateformat="%d-%m-%Y")
+        start.set_date(default_start)
+        start.grid(row=0, column=0, padx=3)
+
+        end = DateEntry(frame, width=10, dateformat="%d-%m-%Y")
+        end.set_date(default_end)
+        end.grid(row=0, column=1, padx=3)
+
+        hours = tb.Entry(frame, width=6)
+        hours.grid(row=0, column=2, padx=3)
+
+        tb.Label(frame, text="Start").grid(row=1, column=0)
+        tb.Label(frame, text="End").grid(row=1, column=1)
+        tb.Label(frame, text="Hours").grid(row=1, column=2)
+
+        def delete_period():
+            periods.remove(period_dict)
+            frame.destroy()
+
+        delete_btn = tb.Button(frame, text="❌", bootstyle=DANGER, width=4, command=delete_period)
+        delete_btn.grid(row=0, column=3, padx=5)
+
+        period_dict = {"start": start, "end": end, "hours": hours}
+        periods.append(period_dict)
+
+    tb.Button(contract_frame, text="➕ Add Contract Change", bootstyle=INFO, command=add_period).pack(pady=5)
 
     # Output Box
     output_box = tb.Text(output_frame, wrap="word", font=("Consolas", 10))
