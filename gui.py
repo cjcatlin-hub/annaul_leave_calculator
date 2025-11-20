@@ -2,6 +2,7 @@ import webbrowser
 import ttkbootstrap as tb
 from ttkbootstrap.constants import *
 from ttkbootstrap.widgets import DateEntry
+from ttkbootstrap.dialogs import Messagebox
 from datetime import datetime
 from logic import calculate_leave
 from output_utils import export_to_csv, export_to_pdf, print_summary
@@ -32,20 +33,20 @@ def build_gui():
 
     def show_about():
         about_text = (
-            "Annual Leave Calculator\n"
-            "Version: 0.1\n\n"
-            "Author: Christopher Catlin\n"
-            "License: GNU General Public License v3.0\n\n"
-            "Source Code:\nClick 'Open GitHub' below."
-        )
-        # Show info box
-        tb.Messagebox.show_info(title="About", message=about_text)
+        "Annual Leave Calculator\n"
+        "Version: 0.1\n\n"
+        "Author: Christopher Catlin\n"
+        "License: GNU General Public License v3.0\n\n"
+        "Source Code:\nClick 'Open GitHub' below."
+    )
+    # Show info box
+        Messagebox.show_info(title="About", message=about_text)
 
     def open_github():
         webbrowser.open("https://github.com/cjcatlin-hub/annaul_leave_calculator")
 
     about_menu.add_command(label="About", command=show_about)
-    about_menu.add_command(label="Open GitHub", command=open_github)
+    about_menu.add_command(label="GitHub Repo", command=open_github)
     menubar.add_cascade(label="About", menu=about_menu)
 
     root.config(menu=menubar)
