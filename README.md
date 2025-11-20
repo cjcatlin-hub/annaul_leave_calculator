@@ -1,7 +1,7 @@
 # Annual Leave Calculator 🏖️ 💼 📅
 ## With GUI as portable app
 
-###### A simple, user-friendly Python application for calculating annual leave entitlements based on employment dates, contracted hours, and long service awards. Built with Tkinter for a clean and portable desktop experience.
+###### A simple, user-friendly Python application for calculating annual leave entitlements based on employment dates, contracted hours, and long service awards. Built with Tkinter Bootstrap for a clean and portable desktop experience.
 
 ---
 
