@@ -40,6 +40,6 @@ def calculate_entitlements(contracted_hours, leave_days, days_in_year, bank_holi
 def calculate_long_service(contracted_hours, years_employed, leave_days, days_in_year):
     blocks = int(years_employed // long_service_years)
     if blocks == 0:
-        return 0, "⚠️ Not eligible for long service award (less than long_serivce_years years)"
-    award = round_to_quarter_hour((((contracted_hours / 37.5) * 7.5) * blocks) * (leave_days / days_in_year))
+        return 0, f"⚠️ Not eligible for long service award (less than {long_service_years} years)"
+    award = round_to_quarter_hour((((contracted_hours / WTE) * 7.5) * blocks) * (leave_days / days_in_year))
     return award, f"Eligible: {blocks} × {long_service_years}-year block(s)"
