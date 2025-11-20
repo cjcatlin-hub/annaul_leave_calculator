@@ -29,8 +29,7 @@
 1. Clone or download this repository
 2. Open a terminal in the project folder
 3. Run the app:
-   ```bash
-   python leave_calculator_gui.py
+   `python main.py`
 
 ### Build standalone Windows App
 1. Install PyInstaller:
