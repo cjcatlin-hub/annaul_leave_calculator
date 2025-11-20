@@ -1,11 +1,3 @@
-import ttkbootstrap as tb
-from ttkbootstrap.constants import *
-from ttkbootstrap.widgets import DateEntry
-from datetime import datetime
-from logic import calculate_leave
-from output_utils import export_to_csv, export_to_pdf, print_summary
-
-
 def build_gui():
     root = tb.Window(themename="flatly")
     root.title("Annual Leave Calculator")
@@ -17,12 +9,31 @@ def build_gui():
     def set_theme(theme_name):
         root.style.theme_use(theme_name)
 
-    # Menu bar with theme toggle
+    # Menu bar
     menubar = tb.Menu(root)
+
+    # Theme menu
     theme_menu = tb.Menu(menubar, tearoff=0)
     theme_menu.add_command(label="Light", command=lambda: set_theme("flatly"))
     theme_menu.add_command(label="Dark", command=lambda: set_theme("darkly"))
     menubar.add_cascade(label="Theme", menu=theme_menu)
+
+    # About menu
+    about_menu = tb.Menu(menubar, tearoff=0)
+
+    def show_about():
+        about_text = (
+            "Annual Leave Calculator\n"
+            "Version: 0.1\n\n"
+            "Author: Christopher Catlin\n"
+            "License: GNU General Public License v3.0\n\n"
+            "Source Code:\nhttps://github.com/cjcatlin-hub/annaul_leave_calculator"
+        )
+        tb.Messagebox.show_info(title="About", message=about_text)
+
+    about_menu.add_command(label="About", command=show_about)
+    menubar.add_cascade(label="About", menu=about_menu)
+
     root.config(menu=menubar)
 
     # Header
@@ -76,10 +87,9 @@ def build_gui():
                                   state="readonly", width=27, bootstyle="info")
     region_dropdown.pack(pady=5)
 
-    # Output Box (must be defined before buttons use it)
+    # Output Box
     output_box = tb.Text(output_frame, wrap="word", font=("Consolas", 10))
     output_box.pack(fill=BOTH, expand=True)
-
 
     # Buttons
     button_frame = tb.Frame(input_frame)
@@ -93,5 +103,5 @@ def build_gui():
               command=lambda: export_to_pdf(output_box)).grid(row=1, column=0, padx=10, pady=5)
     tb.Button(button_frame, text="🖨️ Print", bootstyle=SECONDARY,
               command=lambda: print_summary()).grid(row=1, column=1, padx=10, pady=5)
-    
+
     root.mainloop()
